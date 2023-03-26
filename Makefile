@@ -51,7 +51,7 @@ SOURCES := $(shell find $(SRCDIR) -type f -name "*.$(SRCEXT)")
 ASMSRCS := $(shell find $(SRCDIR) -type f -name "*.$(ASMEXT)")
 LIBS	:= $(patsubst lib%.a, %, $(shell find $(LIBDIR) -type f))
 OBJECTS	:= $(patsubst $(SRCDIR)/%,$(OBJDIR)/%,$(SOURCES:.$(SRCEXT)=.$(OBJEXT)))
-ASMOBJS	:= $(patsubst $(SRCDIR)/%,$(OBJDIR)/asm_%,$(ASMSRCS:.$(ASMEXT)=.$(OBJEXT)))
+ASMOBJS	:= $(patsubst $(SRCDIR)/%,$(OBJDIR)/%,$(ASMSRCS:.$(ASMEXT)=.$(OBJEXT)))
 
 INCFLAGS:= -I$(SRCDIR) -I$(INCDIR)
 LFLAGS  := -Llib/ $(addprefix -l, $(LIBS))
@@ -83,7 +83,7 @@ $(OBJDIR)/%.$(OBJEXT): $(SRCDIR)/%.$(SRCEXT)
 	@mkdir -p $(dir $@)
 	@$(CC) $(CFLAGS) $(INCFLAGS) -c $< -o $@
 
-$(OBJDIR)/asm_%.$(OBJEXT): $(SRCDIR)/%.$(ASMEXT)
+$(OBJDIR)/%.$(OBJEXT): $(SRCDIR)/%.$(ASMEXT)
 	@mkdir -p $(dir $@)
 	@nasm -f elf64 $(INCFLAGS) $< -o $@
 

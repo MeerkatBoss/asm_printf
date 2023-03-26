@@ -14,10 +14,56 @@
 
 #include <stddef.h>
 
+/**
+ * @brief Convert given unsigned integer value to hex representation and
+ * store it in buffer.
+ *
+ * @param[in] value	        - integer to be converted
+ * @param[in] buffer	    - result buffer
+ * @param[in] buffer_size   - capacity of `buffer`
+ *
+ * @return -1 if buffer is too small to contain value representation,
+ *          0 upon successful conversion
+ */
 extern "C" int int_to_hex_str(unsigned value, char* buffer, size_t buffer_size);
 
+/**
+ * @brief Convert given unsigned integer value to octal representation and
+ * store it in buffer.
+ *
+ * @param[in] value	        - integer to be converted
+ * @param[in] buffer	    - result buffer
+ * @param[in] buffer_size   - capacity of `buffer`
+ *
+ * @return -1 if buffer is too small to contain value representation,
+ *          0 upon successful conversion
+ */
+extern "C" int int_to_oct_str(unsigned value, char* buffer, size_t buffer_size);
+
+/**
+ * @brief Convert given unsigned integer value to binary representation and
+ * store it in buffer.
+ *
+ * @param[in] value	        - integer to be converted
+ * @param[in] buffer	    - result buffer
+ * @param[in] buffer_size   - capacity of `buffer`
+ *
+ * @return -1 if buffer is too small to contain value representation,
+ *          0 upon successful conversion
+ */
 extern "C" int int_to_bin_str(unsigned value, char* buffer, size_t buffer_size);
 
-extern "C" int int_to_dec_str(int value, char* buffer, size_t buffer_size);
+/**
+ * @brief Convert given signed integer value to decimal representation and
+ * store it in buffer.
+ *
+ * @param[in] value	        - integer to be converted
+ * @param[in] buffer	    - result buffer
+ * @param[in] buffer_size   - capacity of `buffer`
+ *
+ * @return -1 if buffer is too small to contain value representation,
+ *          0 upon successful conversion
+ */
+extern "C" int int_to_dec_str(int      value, char* buffer, size_t buffer_size);
 
 #endif /* conversions.h */

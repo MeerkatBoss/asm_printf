@@ -1,6 +1,7 @@
 default		rel
 
 global		put_char_buffered:function
+global		put_str_buffered:function
 global		flush_buffer:function
 
 BUFFER_CAPACITY	equ	4096
@@ -8,11 +9,11 @@ BUFFER_CAPACITY	equ	4096
 section		.text
 
 ;====================================================================================================
-; Prints character to output buffer. '\n' forces buffer flush.
+; Prints character to stdout. '\n' forces buffer flush.
 ;====================================================================================================
 ; Entry:	DIL		ASCII character to print
 ; Exit:		EAX		0 upon success, -1 otherwise
-; Destroys:
+; Destroys:	RCX, RDX, RSI, RDI
 ;====================================================================================================
 put_char_buffered:
 		xor			rdx,			rdx
@@ -35,6 +36,41 @@ put_char_buffered:
 .need_flush:	call			flush_buffer
 		ret								; eax set by flush_buffer
 ;====================================================================================================
+
+;====================================================================================================
+; Prints NUL-terminated string of characters to stdout
+;====================================================================================================
+; Entry:		RDI		- string address
+; Exit:			EAX		- number of characters printed
+; Destroys:		RCX, RDX, RSI, RDI
+;====================================================================================================
+put_str_buffered:
+.print_loop:	mov BYTE		al,			[rdi]
+		test			al,			al		; is NUL-terminator?
+		jz			.success				; TRUE: print finished
+
+		push			rdi					; Save RDI on stack
+		push			rcx					; Save RCX on stack
+
+		mov			dil,			al		; character in DIL
+		call			put_char_buffered
+
+		pop			rcx					; Restore RCX from stack
+		pop			rdi					; Restore RDI from stack
+
+		test			rax,			rax
+		jnz			.fail					; Print failed
+
+		inc			ecx					; Increment character counter
+		inc			rdi					; Next character
+		jmp			.print_loop
+		
+.success: 	mov			eax,			ecx
+		ret
+
+.fail:		ret								; RAX already -1
+;====================================================================================================
+		
 		
 ;====================================================================================================
 ; Empties output buffer and outputs its contents to `stdout`

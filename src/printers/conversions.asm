@@ -3,6 +3,7 @@ default		rel
 global		int_to_hex_str:function
 global		int_to_bin_str:function
 global		int_to_dec_str:function
+global		int_to_oct_str:function
 
 section 	.text
 
@@ -76,6 +77,54 @@ int_to_hex_str:	xor			rcx,			rcx
 		mov BYTE		[r8],			0		; NUL-terminator
 		
 		xor			eax,			eax
+		ret
+;====================================================================================================
+
+;====================================================================================================
+; Converts given integer value to octal representation and stores it in given buffer. If buffer size
+; is not enough to contain octal representation, returns -1, otherwise returns 0
+;====================================================================================================
+; Entry:	EDI		input integer
+;		RSI		buffer address
+;		RDX		buffer size
+; Exit:		EAX		-1 upon failure, 0 otherwise
+; Destroys:	RCX, EDI, ESI, R8, R9
+;====================================================================================================
+int_to_oct_str:	xor			rcx,			rcx
+		lea			r8,			[ConversionBuf+BUFFER_SIZE-1]
+
+.div_loop:	mov			eax,			edi
+		and			eax,			07		; Get last three bits (octal digit)
+		add			eax,			'0'		; Convert to character
+		mov BYTE		[r8],			al		; Save in internal buffer
+
+		dec			r8					; Decrease pointer
+		inc			rcx					; Increase counter
+
+		shr			edi,			3		; /8
+		jnz			.div_loop
+
+		inc			r8					; r8 points to first character
+
+		mov			rax,			rcx
+		inc			rax
+		cmp			rdx,			rax		; rdx < rcx + 1 ?
+		jae			.end
+
+		mov			eax,			-1		; Buffer too small
+		ret
+
+.end:		mov			rdi,			rsi		; destination in rdi
+		mov			rsi,			r8		; source in rsi
+		mov			r8,			rcx		; save length
+		add			r8,			rdi		; r8 points to last byte
+
+		call			copy_bytes				; copy result to buffer
+
+		mov BYTE		[r8],			0		; NUL-terminator
+		
+		xor			eax,			eax
+		
 		ret
 ;====================================================================================================
 
