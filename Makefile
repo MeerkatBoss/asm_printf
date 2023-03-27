@@ -48,7 +48,7 @@ ASMSRCS := $(shell find $(SRCDIR) -type f -name "*.$(ASMEXT)")
 LIBS	:= $(patsubst lib%.a, %, $(shell find $(LIBDIR) -type f))
 
 ifdef NOSTDLIB
-	CFLAGS:=-Og -Wall -fno-stack-protector -pie -fPIE
+	CFLAGS:=$(CFLAGS) -fno-stack-protector
 else
 	ASMSRCS := $(filter-out src/stdlib.asm,$(ASMSRCS))
 endif

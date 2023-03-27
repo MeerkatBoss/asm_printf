@@ -45,6 +45,7 @@ put_char_buffered:
 ; Destroys:		RCX, RDX, RSI, RDI
 ;====================================================================================================
 put_str_buffered:
+		xor			rcx,			rcx
 .print_loop:	mov BYTE		al,			[rdi]
 		test			al,			al		; is NUL-terminator?
 		jz			.success				; TRUE: print finished

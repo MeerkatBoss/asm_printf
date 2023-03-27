@@ -132,7 +132,9 @@ print_special:	xor			rax,			rax
 		pop			rsi					; Restore RSI from stack
 		add			rdi,			8		; Next argument
 
-		jmp			.end					; eax already set correctly
+		xor			eax,			eax
+		inc			eax					; eax = 1
+		jmp			.end
 
 ;CASE 'd'
 .spec_decimal:	push			rsi					; Save RSI on stack

@@ -9,8 +9,7 @@ int main()
 
     res = (int) (long)call_cdecl_function( // TODO: This looks really awkward
             (cdecl_func_t)print_format,
-            "Hello%c %s! Today is %d-%o-%d\n",
-            ',', "MeerkatBoss", 26, 03, 2023);
+            "%s!\n", "Hello, World");
 
     res = int_to_dec_str(res, buffer, 16);
     put_str_buffered(buffer);
