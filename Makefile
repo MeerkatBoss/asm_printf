@@ -28,10 +28,6 @@ ifeq ($(BUILDTYPE), Release)
 	CFLAGS:=-std=c++2a -O3 -Wall
 endif
 
-ifndef NOCHECK
-	CFLAGS:=$(CFLAGS) $(CHECK_FLAGS)
-endif
-
 PROJECT	:= printf
 VERSION := 0.0.1
 
@@ -50,9 +46,15 @@ ASMEXT	:= asm
 SOURCES := $(shell find $(SRCDIR) -type f -name "*.$(SRCEXT)")
 ASMSRCS := $(shell find $(SRCDIR) -type f -name "*.$(ASMEXT)")
 LIBS	:= $(patsubst lib%.a, %, $(shell find $(LIBDIR) -type f))
+
+ifdef NOSTDLIB
+	CFLAGS:=-Og -Wall -fno-stack-protector -pie -fPIE
+else
+	ASMSRCS := $(filter-out src/stdlib.asm,$(ASMSRCS))
+endif
+
 OBJECTS	:= $(patsubst $(SRCDIR)/%,$(OBJDIR)/%,$(SOURCES:.$(SRCEXT)=.$(OBJEXT)))
 ASMOBJS	:= $(patsubst $(SRCDIR)/%,$(OBJDIR)/%,$(ASMSRCS:.$(ASMEXT)=.$(OBJEXT)))
-
 INCFLAGS:= -I$(SRCDIR) -I$(INCDIR)
 LFLAGS  := -Llib/ $(addprefix -l, $(LIBS))
 
@@ -87,9 +89,17 @@ $(OBJDIR)/%.$(OBJEXT): $(SRCDIR)/%.$(ASMEXT)
 	@mkdir -p $(dir $@)
 	@nasm -f elf64 $(INCFLAGS) $< -o $@
 
+$(BINDIR)/$(PROJECT):
+
+ifdef NOSTDLIB
+$(BINDIR)/$(PROJECT): $(OBJECTS) $(ASMOBJS)
+	@mkdir -p $(dir $@)
+	@ld $(LFLAGS) $^ -o $(BINDIR)/$(PROJECT)
+else
 $(BINDIR)/$(PROJECT): $(OBJECTS) $(ASMOBJS)
 	@mkdir -p $(dir $@)
 	@$(CC) $(CFLAGS) $^ $(LFLAGS) -o $(BINDIR)/$(PROJECT)
+endif
 
 clean:
 	@rm -rf $(OBJDIR)
